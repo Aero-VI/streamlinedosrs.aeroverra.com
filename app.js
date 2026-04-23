@@ -175,10 +175,14 @@ const lootOracleMessages = {
 };
 
 const storageKey = 'pixel-dopamine-button-collection';
+const DOUBLE_TAP_DELAY_MS = 320;
+const DOUBLE_TAP_DISTANCE_PX = 28;
+
 let selectedSkill = skills[0];
 let displayedLevel = 2;
 let audioContext;
 let foundItemIds = loadCollection();
+let lastTouchEnd = { time: 0, x: 0, y: 0 };
 
 function iconSquare(bg, accent, inner) {
   return `
@@ -498,6 +502,39 @@ function titleCase(value) {
   return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function shouldIgnoreDoubleTapTarget(target) {
+  return Boolean(
+    target.closest('input, textarea, select, option, label, [contenteditable="true"]')
+  );
+}
+
+function preventRapidTapZoom(event) {
+  if (event.touches.length > 0 || shouldIgnoreDoubleTapTarget(event.target)) {
+    return;
+  }
+
+  const touch = event.changedTouches[0];
+  if (!touch) {
+    return;
+  }
+
+  const now = event.timeStamp;
+  const withinTime = now - lastTouchEnd.time > 0 && now - lastTouchEnd.time < DOUBLE_TAP_DELAY_MS;
+  const withinDistance =
+    Math.abs(touch.clientX - lastTouchEnd.x) < DOUBLE_TAP_DISTANCE_PX
+    && Math.abs(touch.clientY - lastTouchEnd.y) < DOUBLE_TAP_DISTANCE_PX;
+
+  lastTouchEnd = {
+    time: now,
+    x: touch.clientX,
+    y: touch.clientY,
+  };
+
+  if (withinTime && withinDistance) {
+    event.preventDefault();
+  }
+}
+
 document.addEventListener('click', (event) => {
   const skillButton = event.target.closest('.skill-option');
   if (skillButton) {
@@ -521,6 +558,8 @@ document.addEventListener('keydown', (event) => {
     closeItemModal();
   }
 });
+
+document.addEventListener('touchend', preventRapidTapZoom, { passive: false });
 
 closeModalButton.addEventListener('click', closeItemModal);
 dopamineButton.addEventListener('click', triggerReward);
