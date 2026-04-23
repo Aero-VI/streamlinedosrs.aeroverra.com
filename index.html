@@ -20,6 +20,7 @@
           </button>
           <div id="xpLayer" class="xp-layer" aria-hidden="true"></div>
           <div id="flash" class="flash-ring" aria-hidden="true"></div>
+          <div id="lootBurst" class="loot-burst" aria-live="polite" aria-atomic="true"></div>
         </div>
 
         <div class="status-row">
@@ -37,6 +38,17 @@
           </div>
         </div>
 
+        <section class="display-case-panel" aria-labelledby="displayCaseTitle">
+          <div class="display-case-header">
+            <div>
+              <p class="skill-tag">Treasure display case</p>
+              <h2 id="displayCaseTitle">Collected Curios</h2>
+            </div>
+            <div class="level-brag" id="collectionStatus">0 / 12 relics found</div>
+          </div>
+          <div id="displayCase" class="display-case" aria-label="Loot display case"></div>
+        </section>
+
         <section class="skills-panel" aria-label="Skill selector">
           <div class="skills-header">
             <p class="skill-tag">Choose your highly legitimate fake skill.</p>
@@ -46,6 +58,17 @@
         </section>
       </div>
     </main>
+
+    <div id="itemModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal="true"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="itemModalTitle">
+        <button id="closeModalButton" class="modal-close" type="button" aria-label="Close item details">×</button>
+        <div id="modalItemArt" class="modal-item-art"></div>
+        <p id="modalItemRarity" class="modal-rarity"></p>
+        <h3 id="itemModalTitle"></h3>
+        <p id="modalItemDescription" class="modal-description"></p>
+      </div>
+    </div>
 
     <script src="app.js"></script>
   </body>
