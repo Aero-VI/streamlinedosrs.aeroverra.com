@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pixel's Dopamine Forge</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="sky-glow"></div>
+    <main class="scene">
+      <div class="panel">
+        <p class="eyebrow">Arcane Reward Engine</p>
+        <h1>Dopamine Forge</h1>
+        <p class="subhead">An old-school fantasy grind button with absolutely zero real XP value.</p>
+
+        <div class="button-wrap">
+          <button id="dopamineButton" class="dopamine-button" type="button" aria-live="polite">
+            <span class="button-core">CLAIM XP</span>
+          </button>
+          <div id="xpLayer" class="xp-layer" aria-hidden="true"></div>
+          <div id="flash" class="flash-ring" aria-hidden="true"></div>
+        </div>
+
+        <div class="status-row">
+          <div class="status-card">
+            <span class="status-label">Last Gain</span>
+            <strong id="lastGain">+0 xp</strong>
+          </div>
+          <div class="status-card">
+            <span class="status-label">Fake Level</span>
+            <strong id="fakeLevel">1</strong>
+          </div>
+          <div class="status-card wide">
+            <span class="status-label">Oracle</span>
+            <strong id="oracleText">The grind has not begun.</strong>
+          </div>
+        </div>
+
+        <section class="skills-panel" aria-label="Skill selector">
+          <div class="skills-header">
+            <p class="skill-tag">Choose your highly legitimate fake skill.</p>
+            <div class="level-brag">Permanent status: 1 level higher than everyone else.</div>
+          </div>
+          <div id="skillGrid" class="skill-grid"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
