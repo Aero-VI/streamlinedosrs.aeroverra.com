@@ -124,9 +124,9 @@ const collectibles = [
 ];
 
 const rarityMeta = {
-  uncommon: { label: 'Uncommon pull', chance: 50, delay: 900, css: 'uncommon', burst: 'A curious find appears!', sound: [440, 554.37, 659.25] },
-  rare: { label: 'Rare pull', chance: 150, delay: 1200, css: 'rare', burst: 'A rare relic glimmers into view!', sound: [392, 587.33, 783.99, 987.77] },
-  super: { label: 'Super rare pull', chance: 1000, delay: 1650, css: 'super', burst: 'A vault-tier treasure erupts from the forge!', sound: [329.63, 659.25, 987.77, 1318.51, 1760] },
+  uncommon: { label: 'Uncommon pull', chance: 50, delay: 900, css: 'uncommon', burst: 'A curious find appears!', sound: [293.66, 369.99, 440] },
+  rare: { label: 'Rare pull', chance: 150, delay: 1200, css: 'rare', burst: 'A rare relic glimmers into view!', sound: [261.63, 392, 523.25, 659.25] },
+  super: { label: 'Super rare pull', chance: 1000, delay: 1650, css: 'super', burst: 'A vault-tier treasure erupts from the forge!', sound: [220, 329.63, 440, 659.25, 880] },
 };
 
 const shelfConfig = [
@@ -144,6 +144,7 @@ const fakeLevel = document.getElementById('fakeLevel');
 const oracleText = document.getElementById('oracleText');
 const displayCase = document.getElementById('displayCase');
 const collectionStatus = document.getElementById('collectionStatus');
+const heroSkillName = document.getElementById('heroSkillName');
 const itemModal = document.getElementById('itemModal');
 const closeModalButton = document.getElementById('closeModalButton');
 const modalItemArt = document.getElementById('modalItemArt');
@@ -215,6 +216,7 @@ function renderButton() {
       <span>CLAIM XP</span>
     </span>
   `;
+  heroSkillName.textContent = selectedSkill.name;
 }
 
 function renderSkillOptions() {
@@ -301,89 +303,99 @@ function ensureAudioContext() {
   return Promise.resolve();
 }
 
+function scheduleVoice(master, { start, freq, duration, gain = 0.08, type = 'triangle', attack = 0.015, release = 0.22, detune = 0, vibrato = 0 }) {
+  const osc = audioContext.createOscillator();
+  const amp = audioContext.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, start);
+  if (detune) osc.detune.setValueAtTime(detune, start);
+  if (vibrato) {
+    osc.frequency.linearRampToValueAtTime(freq * (1 + vibrato), start + duration * 0.45);
+    osc.frequency.linearRampToValueAtTime(freq, start + duration);
+  }
+  amp.gain.setValueAtTime(0.0001, start);
+  amp.gain.exponentialRampToValueAtTime(gain, start + attack);
+  amp.gain.exponentialRampToValueAtTime(0.0001, start + duration + release);
+  osc.connect(amp);
+  amp.connect(master);
+  osc.start(start);
+  osc.stop(start + duration + release + 0.02);
+}
+
 function playOriginalChime() {
   return ensureAudioContext().then(() => {
-    const now = audioContext.currentTime + 0.02;
+    const now = audioContext.currentTime + 0.01;
     const master = audioContext.createGain();
-    master.gain.setValueAtTime(0.0001, now);
     master.connect(audioContext.destination);
-    master.gain.exponentialRampToValueAtTime(0.22, now + 0.04);
-    master.gain.exponentialRampToValueAtTime(0.0001, now + 1.42);
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.exponentialRampToValueAtTime(0.19, now + 0.04);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + 1.55);
 
-    const notes = [523.25, 659.25, 783.99, 1046.5];
-    notes.forEach((freq, index) => {
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      osc.type = index % 2 === 0 ? 'triangle' : 'sine';
-      osc.frequency.setValueAtTime(freq, now + index * 0.12);
-      gain.gain.setValueAtTime(0.0001, now + index * 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.17 - index * 0.02, now + index * 0.12 + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.12 + 0.5);
-      osc.connect(gain);
-      gain.connect(master);
-      osc.start(now + index * 0.12);
-      osc.stop(now + index * 0.12 + 0.55);
-    });
+    const melody = [
+      { freq: 392, time: 0, duration: 0.2, gain: 0.075 },
+      { freq: 523.25, time: 0.12, duration: 0.23, gain: 0.09 },
+      { freq: 587.33, time: 0.27, duration: 0.26, gain: 0.085 },
+      { freq: 783.99, time: 0.46, duration: 0.34, gain: 0.1, vibrato: 0.02 },
+      { freq: 1046.5, time: 0.72, duration: 0.42, gain: 0.08, vibrato: 0.03 },
+    ];
 
-    const sparkle = audioContext.createOscillator();
-    const sparkleGain = audioContext.createGain();
-    sparkle.type = 'square';
-    sparkle.frequency.setValueAtTime(1318.51, now + 0.42);
-    sparkle.frequency.exponentialRampToValueAtTime(1760, now + 0.82);
-    sparkleGain.gain.setValueAtTime(0.0001, now + 0.42);
-    sparkleGain.gain.exponentialRampToValueAtTime(0.08, now + 0.46);
-    sparkleGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.24);
-    sparkle.connect(sparkleGain);
-    sparkleGain.connect(master);
-    sparkle.start(now + 0.42);
-    sparkle.stop(now + 1.26);
+    const harmony = [
+      { freq: 196, time: 0, duration: 0.34, gain: 0.03, type: 'sine' },
+      { freq: 261.63, time: 0.12, duration: 0.34, gain: 0.035, type: 'sine' },
+      { freq: 293.66, time: 0.27, duration: 0.38, gain: 0.034, type: 'sine' },
+      { freq: 392, time: 0.46, duration: 0.46, gain: 0.038, type: 'triangle' },
+    ];
 
-    return new Promise((resolve) => {
-      setTimeout(resolve, 1450);
-    });
+    melody.forEach((note) => scheduleVoice(master, { start: now + note.time, freq: note.freq, duration: note.duration, gain: note.gain, type: 'triangle', vibrato: note.vibrato ?? 0 }));
+    harmony.forEach((note) => scheduleVoice(master, { start: now + note.time, freq: note.freq, duration: note.duration, gain: note.gain, type: note.type }));
+    scheduleVoice(master, { start: now + 0.74, freq: 1567.98, duration: 0.25, gain: 0.036, type: 'sine' });
+    scheduleVoice(master, { start: now + 0.84, freq: 1760, duration: 0.2, gain: 0.028, type: 'triangle' });
+
+    return Promise.resolve();
   });
 }
 
 function playLootFanfare(rarity) {
   const meta = rarityMeta[rarity];
   return ensureAudioContext().then(() => {
-    const now = audioContext.currentTime + 0.02;
+    const now = audioContext.currentTime + 0.01;
     const master = audioContext.createGain();
     master.connect(audioContext.destination);
     master.gain.setValueAtTime(0.0001, now);
-    master.gain.exponentialRampToValueAtTime(rarity === 'super' ? 0.26 : 0.18, now + 0.04);
-    master.gain.exponentialRampToValueAtTime(0.0001, now + (rarity === 'super' ? 1.75 : 1.18));
+    master.gain.exponentialRampToValueAtTime(rarity === 'super' ? 0.22 : 0.16, now + 0.03);
+    master.gain.exponentialRampToValueAtTime(0.0001, now + (rarity === 'super' ? 1.45 : 1.05));
 
     meta.sound.forEach((freq, index) => {
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      osc.type = rarity === 'uncommon' ? 'triangle' : rarity === 'rare' ? 'sine' : 'sawtooth';
-      osc.frequency.setValueAtTime(freq, now + index * 0.09);
-      gain.gain.setValueAtTime(0.0001, now + index * 0.09);
-      gain.gain.exponentialRampToValueAtTime(0.12, now + index * 0.09 + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.09 + 0.45);
-      osc.connect(gain);
-      gain.connect(master);
-      osc.start(now + index * 0.09);
-      osc.stop(now + index * 0.09 + 0.5);
+      scheduleVoice(master, {
+        start: now + index * 0.08,
+        freq,
+        duration: rarity === 'super' ? 0.22 : 0.18,
+        gain: rarity === 'super' ? 0.08 : 0.065,
+        type: rarity === 'uncommon' ? 'triangle' : 'sine',
+        vibrato: rarity === 'super' ? 0.025 : 0.01,
+      });
+    });
+
+    scheduleVoice(master, {
+      start: now + 0.16,
+      freq: rarity === 'super' ? 987.77 : 783.99,
+      duration: 0.44,
+      gain: rarity === 'super' ? 0.055 : 0.035,
+      type: 'triangle',
     });
 
     if (rarity !== 'uncommon') {
-      const shimmer = audioContext.createOscillator();
-      const shimmerGain = audioContext.createGain();
-      shimmer.type = 'triangle';
-      shimmer.frequency.setValueAtTime(rarity === 'rare' ? 1174.66 : 1567.98, now + 0.2);
-      shimmer.frequency.exponentialRampToValueAtTime(rarity === 'rare' ? 1396.91 : 2093, now + 0.7);
-      shimmerGain.gain.setValueAtTime(0.0001, now + 0.2);
-      shimmerGain.gain.exponentialRampToValueAtTime(0.08, now + 0.26);
-      shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
-      shimmer.connect(shimmerGain);
-      shimmerGain.connect(master);
-      shimmer.start(now + 0.2);
-      shimmer.stop(now + 0.98);
+      scheduleVoice(master, {
+        start: now + 0.34,
+        freq: rarity === 'rare' ? 1174.66 : 1567.98,
+        duration: 0.28,
+        gain: 0.032,
+        type: 'sine',
+        vibrato: 0.04,
+      });
     }
 
-    return new Promise((resolve) => setTimeout(resolve, meta.delay));
+    return Promise.resolve(meta.delay);
   });
 }
 
@@ -449,9 +461,12 @@ function closeItemModal() {
   itemModal.setAttribute('aria-hidden', 'true');
 }
 
-async function triggerReward() {
-  dopamineButton.disabled = true;
+function triggerReward() {
+  dopamineButton.classList.remove('is-firing');
+  void dopamineButton.offsetWidth;
   dopamineButton.classList.add('is-firing');
+  setTimeout(() => dopamineButton.classList.remove('is-firing'), 140);
+
   flash.classList.remove('active');
   void flash.offsetWidth;
   flash.classList.add('active');
@@ -476,17 +491,11 @@ async function triggerReward() {
     spawnXpDrop(`${selectedSkill.name} level up!`, 'level-toast', 0, -4);
   }
 
-  try {
-    await playOriginalChime();
-    if (lootDrop) {
-      celebrateLoot(lootDrop);
-      await playLootFanfare(lootDrop.rarity);
-      unlockItem(lootDrop);
-    }
-    await new Promise((resolve) => setTimeout(resolve, lootDrop ? 320 : 280));
-  } finally {
-    dopamineButton.disabled = false;
-    dopamineButton.classList.remove('is-firing');
+  playOriginalChime().catch(() => {});
+  if (lootDrop) {
+    celebrateLoot(lootDrop);
+    playLootFanfare(lootDrop.rarity).catch(() => {});
+    unlockItem(lootDrop);
   }
 }
 

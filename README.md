@@ -6,12 +6,12 @@ A tiny OSRS-inspired dopamine button for Sam.
 
 - Big red center button
 - Original fantasy/MMO-inspired background
-- Original synthesized level-up-ish chime
+- Original synthesized fantasy/MMO level-up-ish chime with a more tavern-jingle feel
 - Fake XP drops and occasional level-up toast
-- Button lockout until the reward sequence finishes
+- No button lockout — mash it as fast as your thumbs allow
 - Skill selector at the bottom that swaps the button symbol
 - Permanent joke indicator showing you're 1 level higher than everyone else
-- Mobile-friendly layout
+- Mobile-friendly layout with rapid-tap-safe button behavior
 
 ## Local run
 

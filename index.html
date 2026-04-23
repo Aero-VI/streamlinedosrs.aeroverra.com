@@ -10,9 +10,28 @@
     <div class="sky-glow"></div>
     <main class="scene">
       <div class="panel">
-        <p class="eyebrow">Arcane Reward Engine</p>
+        <div class="panel-chrome" aria-hidden="true">
+          <span class="panel-rivet tl"></span>
+          <span class="panel-rivet tr"></span>
+          <span class="panel-rivet bl"></span>
+          <span class="panel-rivet br"></span>
+        </div>
+        <p class="eyebrow">Guild Hall Reward Engine</p>
         <h1>Dopamine Forge</h1>
-        <p class="subhead">An old-school fantasy grind button with absolutely zero real XP value.</p>
+        <p class="subhead">An old-school fantasy grind button with absolutely zero real XP value, now with louder tavern prestige.</p>
+
+        <section class="hero-panel" aria-label="Forge altar">
+          <div class="hero-copy">
+            <p class="skill-tag hero-tag">Currently training</p>
+            <p class="hero-skill" id="heroSkillName">Embercraft</p>
+            <p class="hero-caption">Tap like you're speed-running a bank booth.</p>
+          </div>
+          <div class="hero-trim" aria-hidden="true">
+            <span>Quest-ready</span>
+            <span>Zero cooldown</span>
+            <span>Relics enabled</span>
+          </div>
+        </section>
 
         <div class="button-wrap">
           <button id="dopamineButton" class="dopamine-button" type="button" aria-live="polite">
@@ -34,7 +53,7 @@
           </div>
           <div class="status-card wide">
             <span class="status-label">Oracle</span>
-            <strong id="oracleText">The grind has not begun.</strong>
+            <strong id="oracleText">The guild hall awaits your first click.</strong>
           </div>
         </div>
 
