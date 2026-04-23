@@ -418,6 +418,12 @@ h1 {
   box-shadow: 0 0 60px rgba(255, 211, 91, 0.32), 0 18px 48px rgba(0, 0, 0, 0.48);
 }
 
+.loot-banner.legendary {
+  background: linear-gradient(180deg, rgba(78, 42, 119, 0.99), rgba(25, 20, 57, 0.99));
+  border-color: rgba(255, 232, 255, 0.56);
+  box-shadow: 0 0 78px rgba(230, 172, 255, 0.38), 0 0 28px rgba(136, 168, 255, 0.18), 0 20px 56px rgba(0, 0, 0, 0.52);
+}
+
 .loot-rarity {
   margin: 0 0 6px;
   text-transform: uppercase;
@@ -576,6 +582,10 @@ h1 {
 
 .collection-item.rare.found {
   box-shadow: inset 0 0 0 1px rgba(124, 181, 255, 0.24), 0 0 14px rgba(98, 149, 223, 0.12);
+}
+
+.collection-item.legendary.found {
+  box-shadow: inset 0 0 0 1px rgba(255, 220, 255, 0.42), 0 0 26px rgba(203, 140, 255, 0.24), 0 0 10px rgba(121, 170, 255, 0.14);
 }
 
 .collection-item.super.found {
@@ -799,6 +809,12 @@ h1 {
   12% { opacity: 1; transform: translateY(0) scale(1); }
   78% { opacity: 1; transform: translateY(-2px) scale(1); }
   100% { opacity: 0; transform: translateY(-12px) scale(1.04); }
+}
+
+@media (max-width: 900px) {
+  .display-shelf.legendary .shelf-items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 700px) {
